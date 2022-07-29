@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="Deliver">
+	
+	<insert id="insertDeliver" parameterType="deliverdto">
+		INSERT INTO DELIVERY_TABLE VALUES(DELIVERYNUM.NEXTVAL,#{invoicenum},'배송중',SYSDATE,#{mng_num})
+	</insert>
+	
+	<select id="getDeliverCnt" resultType="_int">
+		SELECT COUNT(*) FROM DELIVERY_TABLE
+	</select>
+	
+	<select id="getDeliverList" parameterType="hashmap" resultType="deliverdto">
+		SELECT * FROM
+			(SELECT ROWNUM R, D.* FROM
+				(SELECT * FROM DELIVERY_TABLE 
+				LEFT JOIN ORDER_TABLE ON DELIVERY_TABLE.MNG_NUM = ORDER_TABLE.MNG_NUM 
+				LEFT JOIN PRODSALE ON ORDER_TABLE.PRODNUM = PRODSALE.PRODNUM 
+				ORDER BY  DELIVER_DATE DESC) D) B WHERE B.R BETWEEN #{startRow} AND #{endRow}
+	</select> 
+	
+	<update id="deliverDone" parameterType="String">
+		UPDATE DELIVERY_TABLE SET DELI_PROGRESS='배송완료' WHERE DELIVERYNUM=#{delivernum} 
+	</update>
+	
+	<select id="getDelverynumList" resultType="_int">
+		SELECT MNG_NUM FROM DELIVERY_TABLE
+	</select>
+	
+</mapper>
+
+
+
+
+
+
+
+
+
+
+
+

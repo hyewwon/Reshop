@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+  <mapper namespace="News">
+  	<select id="getNewsCnt" resultType="_int">
+		SELECT COUNT(*) FROM DONA_NEWS  	
+  	</select>
+  	<select id="getReplyCnt" resultType="_int" parameterType="_int">
+		SELECT COUNT(*) FROM TP_REPLY WHERE NOTICE_NUM=#{notice_num}
+	</select>
+	<select id="getNewsList" parameterType="hashmap" resultType="newsdto">
+		SELECT * FROM
+			(SELECT ROWNUM R, D.* FROM
+				(SELECT * FROM DONA_NEWS ORDER BY NEWS_NUM DESC) D) B
+		WHERE B.R BETWEEN #{startRow} AND #{endRow}
+	</select> 
+	<select id="getNewsReplys" parameterType="_int" resultType="replydto">
+		SELECT * FROM TP_REPLY WHERE NEWS_NUM=#{news_num}	
+	</select>
+	<select id="getSeq" resultType="_int" parameterType="string">
+		SELECT NEWS_NUM FROM DONA_NEWS WHERE USERID=#{userid} ORDER BY NEWS_NUM DESC
+	</select>
+	<select id="getDetail" parameterType="_int" resultType="newsdto">
+		SELECT * FROM DONA_NEWS WHERE NEWS_NUM=#{news_num}
+	</select>
+	<insert id="insertNews" parameterType="newsdto">
+		INSERT INTO DONA_NEWS
+		VALUES(BOARD_SEQ.NEXTVAL, #{news_title}, #{news_contents}, #{news_cnt}, SYSDATE)
+	</insert>
+	<insert id="insertReply" parameterType="replydto">
+<!-- 		INSERT INTO TP_REPLY
+		VALUES(REPLY_SEQ.NEXTVAL, #{re_contents}, #{userid}, #{notice_num})  -->
+		INSERT INTO TP_REPLY (REPLYNUM,USERID,RE_CONTENTS,NEWS_NUM) VALUES (REPLY_SEQ.NEXTVAL,#{userid},#{re_contents}, #{news_num})
+	</insert>
+	<update id="updateNews_cnt" parameterType="_int">
+		UPDATE DONA_NEWS SET NEWS_CNT = NOTICE_CNT+1 WHERE NEWS_NUM=#{news_num}
+	</update>
+	<update id="updateNews" parameterType="newsdto">
+		UPDATE DONA_NEWS SET NEWS_TITLE=#{news_title}, NEWS_CONTENTS=#{news_contents}
+		WHERE NEWS_NUM=#{news_num} 
+	</update>
+	<update id="newsModifyReply" parameterType="hashmap">
+		UPDATE TP_REPLY SET RE_CONTENTS=#{re_contents} WHERE REPLYNUM=#{replynum}
+	</update>
+	<delete id="newsdeleteReply" parameterType="_int">
+		DELETE FROM TP_REPLY WHERE REPLYNUM=#{replynum}
+	</delete>
+	<delete id="deleteReplyAll" parameterType="_int">
+		DELETE FROM TP_REPLY WHERE NEWS_NUM=#{news_num}
+	</delete>
+	<delete id="deleteNews" parameterType="_int">
+		DELETE FROM DONA_NEWS WHERE NEWS_NUM=#{news_num}
+	</delete>
+  
+  
+  
+  
+  </mapper>

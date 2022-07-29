@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="Quest">
+	<select id="getQuestCnt" resultType="_int">
+		SELECT COUNT(*) FROM QUESTION_BOARD
+	</select>
+	<select id="getReplyCnt" resultType="_int" parameterType="_int">
+		SELECT COUNT(*) FROM TP_REPLY WHERE QUEST_NUM=#{quest_num}
+	</select>
+	<select id="getQuestList" parameterType="hashmap" resultType="questdto">
+		SELECT * FROM
+			(SELECT ROWNUM R, D.* FROM
+				(SELECT * FROM QUESTION_BOARD ORDER BY QUEST_NUM DESC) D) B
+		WHERE B.R BETWEEN #{startRow} AND #{endRow}
+	</select> 
+	<select id="getReplys" parameterType="_int" resultType="replydto">
+		SELECT * FROM TP_REPLY WHERE QUEST_NUM=#{quest_num}	
+	</select>
+	<select id="getSeq" resultType="_int" parameterType="string">
+		SELECT QUEST_NUM FROM QUESTION_BOARD WHERE USERID=#{userid} ORDER BY QUEST_NUM DESC
+	</select>
+	<select id="getDetail" parameterType="_int" resultType="questdto">
+		SELECT * FROM QUESTION_BOARD WHERE QUEST_NUM=#{quest_num}
+	</select>
+	<insert id="insertQuest" parameterType="questdto">
+		INSERT INTO QUESTION_BOARD
+		VALUES(BOARD_SEQ.NEXTVAL, #{quest_title}, #{quest_contents}, #{userid}, #{quest_cnt}, SYSDATE)
+	</insert>
+	<insert id="insertReply" parameterType="replydto">
+		INSERT INTO TP_REPLY (REPLYNUM,USERID,RE_CONTENTS,QUEST_NUM) VALUES (REPLY_SEQ.NEXTVAL,#{userid},#{re_contents}, #{quest_num})
+	</insert>
+	<update id="updateQuest_cnt" parameterType="_int">
+		UPDATE QUESTION_BOARD SET QUEST_CNT = QUEST_CNT+1 WHERE QUEST_NUM=#{quest_num}
+	</update>
+	<update id="updateQuest" parameterType="questdto">
+		UPDATE QUESTION_BOARD SET QUEST_TITLE=#{quest_title}, QUEST_CONTENTS=#{quest_contents}
+		WHERE QUEST_NUM=#{quest_num} 
+	</update>
+	<update id="modifyReply" parameterType="hashmap">
+		UPDATE TP_REPLY SET RE_CONTENTS=#{re_contents} WHERE REPLYNUM=#{replynum}
+	</update>
+	<delete id="deleteReply" parameterType="_int">
+		DELETE FROM TP_REPLY WHERE REPLYNUM=#{replynum}
+	</delete>
+	<delete id="deleteReplyAll" parameterType="_int">
+		DELETE FROM TP_REPLY WHERE QUEST_NUM=#{quest_num}
+	</delete>
+	<delete id="deleteQuest" parameterType="_int">
+		DELETE FROM QUESTION_BOARD WHERE QUEST_NUM=#{quest_num}
+	</delete>
+</mapper>
+
+
+
+
+
+
+
+
+
+
+
+

@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+  <mapper namespace = "Product">
+  <select id="getProdCnt" resultType="_int" parameterType="_int">
+		SELECT COUNT(*) FROM PRODSALE
+	</select>
+	<select id="getProdList" parameterType="hashmap" resultType="productdto">
+		SELECT * FROM
+		(SELECT ROWNUM R, D.* FROM
+			(SELECT * FROM PRODSALE ORDER BY PRODNUM DESC) D ) P
+		WHERE P.R BETWEEN #{startRow} AND #{endRow}
+	</select>
+	
+		<!-- 신예찬 : 사용자들을 위한 상품리스트 -->
+  	<select id="getProdCntForUser" resultType="_int" parameterType="_int">
+		SELECT COUNT(*) FROM PRODSALE WHERE CLASSIFY='일반 상품'
+	</select>
+  	<select id="getProdCntForUser2" resultType="_int" parameterType="_int">
+		SELECT COUNT(*) FROM PRODSALE WHERE CLASSIFY='업사이클링 상품'
+	</select>
+	<select id="getProdListForUser" parameterType="hashmap" resultType="productdto">
+		SELECT * FROM
+		(SELECT ROWNUM R, D.* FROM
+			(SELECT * FROM PRODSALE LEFT JOIN TP_FILE ON PRODSALE.PRODNUM = TP_FILE.PRODNUM WHERE CLASSIFY='일반 상품' 
+			ORDER BY ${sortColumn}) D ) P
+		WHERE P.R BETWEEN #{startRow} AND #{endRow}
+	</select>
+	<select id="getProdListForUser2" parameterType="hashmap" resultType="productdto">
+		SELECT * FROM
+		(SELECT ROWNUM R, D.* FROM
+			(SELECT * FROM PRODSALE LEFT JOIN TP_FILE ON PRODSALE.PRODNUM = TP_FILE.PRODNUM WHERE CLASSIFY='업사이클링 상품'
+			 ORDER BY ${sortColumn}) D ) P
+		WHERE P.R BETWEEN #{startRow} AND #{endRow}
+	</select>
+	
+  <select id="getDetail" parameterType="_int" resultType="productdto">
+  	SELECT * FROM PRODSALE WHERE PRODNUM=#{prodnum}
+  </select>
+  
+  <select id="checkProduct" parameterType="_int" resultType="productdto">
+  	SELECT * FROM PRODSALE WHERE PRODNUM=#{prodnum}
+  </select>
+  
+  <select id="selectProdnum" parameterType="productdto" resultType="_int">
+	SELECT PRODNUM FROM PRODSALE WHERE PRODEXPLAIN=#{prodexplain} AND PRODNAME=#{prodname}
+  </select>
+  
+  <update id="updateProduct" parameterType = "productdto">
+  	UPDATE PRODSALE SET PRICE=#{price},PRODNAME=#{prodname},PRODSTATE=#{prodstate},PRODSIZE=#{prodsize},PRODEXPLAIN=#{prodexplain},CLASSIFY=#{classify},
+  	CLASSIFY_PROD=#{classify_prod},BRAND=#{brand},SUG_AGE=#{sug_age},PROD_COLOR=#{prod_color},PRODCNT=#{prodcnt} WHERE PRODNUM=#{prodnum}
+  </update>
+  
+  <delete id="deleteProduct" parameterType="_int">
+  	DELETE FROM PRODSALE WHERE PRODNUM=#{prodnum}
+  </delete>
+  
+  <insert id="insertProduct" parameterType="productdto">
+  	INSERT INTO PRODSALE
+VALUES(PRODSALE_NUM.NEXTVAL,#{price},#{prodname},#{prodstate},#{prodsize},#{prodexplain},#{classify},#{classify_prod},#{brand},SYSDATE,#{sug_age},#{prod_color},#{prodcnt})
+  </insert>
+  
+  <select id="getProductInfo" resultType="productdto">
+		SELECT * FROM PRODSALE WHERE PRODNUM=#{prodnum}
+	</select>
+  </mapper>

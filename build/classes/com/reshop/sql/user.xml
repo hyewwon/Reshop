@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="User">
+
+	<!-- 중복된 아이디 검사하는 sql -->
+	<select id="checkId" parameterType="string" resultType="_int">
+		SELECT
+		COUNT(*) FROM TP_USER WHERE USERID = #{userid}
+	</select>
+
+	<!-- 로그인 하는 sql -->
+	<select id="login" parameterType="hashmap" resultType="_int">
+		SELECT
+		COUNT(*) FROM TP_USER WHERE USERID=#{userid} AND USERPW=#{userpw}
+	</select>
+	<insert id="join" parameterType="userdto">
+		INSERT INTO WEB.TP_USER
+		(USERID,
+		USERPW, USERNAME,USERAGE, USERPHONE, ZIPCODE, USERADDR,
+		USERADDRDETAIL, USERADDRETC,USERNICK)
+		VALUES(#{userid},#{userpw},#{username},#{userage},#{userphone},#{zipcode},
+		#{useraddr},#{useraddrdetail},#{useraddretc},#{usernick})
+	</insert>
+	<!-- 아이디 찾기 -->
+	<select id="lostId" parameterType="hashmap" resultType="string">
+		SELECT
+		USERID FROM TP_USER WHERE USERNAME=#{username} AND
+		USERPHONE=#{userphone}
+	</select>
+
+	<!-- 판매 기부 요청 -->
+	<insert id="option" parameterType="useroptiondto">
+		INSERT INTO DONA_OR_SELL
+		(DOSNUM,USERID,CLASSIFY_PROD,DOSDIVISION,BRAND,DOORPW,USERADDR,USERADDRDETAIL,USERADDRETC,USERPHONE,CLOTHINGCNT,UPLOADTIME)
+		VALUES(DONA_OR_SELL_NUM.NEXTVAL,#{userid},#{classify_prod},#{dosdivision},#{brand},#{doorpw},#{useraddr},#{useraddrdetail},#{useraddretc},#{userphone},#{clothingcnt},SYSDATE)
+	</insert>
+	<select id="selectdosnum" parameterType="useroptiondto">
+		SELECT DOSNUM FROM
+		DONA_OR_SELL WHERE USERADDR=#{useraddr} AND
+		USERADDRDETAIL=#{useraddrdetail}
+
+	</select>
+
+	<select id="checkpass" parameterType="String"
+		resultType="userdto">
+		SELECT * FROM TP_USER WHERE USERID=#{userid}
+	</select>
+
+	<select id="getUserCnt" resultType="_int">
+		SELECT COUNT(*) FROM TP_USER
+	</select>
+
+	<select id="getUserList" parameterType="hashmap"
+		resultType="userdto">
+		SELECT * FROM
+		(SELECT ROWNUM R, D.* FROM
+		(SELECT * FROM
+		TP_USER ORDER BY USERID) D) B
+		WHERE B.R BETWEEN #{startRow} AND
+		#{endRow}
+	</select>
+
+	<update id="updatepass" parameterType="userdto">
+		UPDATE TP_USER SET
+		USERNAME=#{username}, USERNICK=#{usernick}, USERAGE=#{userage},
+		USERPHONE=#{userphone}, USERADDR=#{useraddr},
+		USERADDRDETAIL=#{useraddrdetail},
+		USERADDRETC=#{useraddretc}, BUY=#{buy}
+		WHERE USERID=#{userid}
+	</update>
+	<update id="deleteuser" parameterType="String">
+		UPDATE TP_USER SET
+		USERPW='d', USERNAME='d', USERNICK='d', USERAGE=0,
+		USERPHONE=NULL,
+		USERADDR=NULL,
+		USERADDRDETAIL=NULL,
+		USERADDRETC=NULL,
+		USERACCOUNT=NULL,
+		MILEAGE=NULL,
+		DONATION=NULL,
+		BUY=NULL, USERGENDER=NULL, USERCLASS=NULL
+		WHERE USERID=#{userid}
+	</update>
+
+	<!-- 사용자가 본인 프로필 수정시 -->
+	<update id="myprofileupdate" parameterType="userdto">
+		UPDATE TP_USER SET
+		USERPW=#{userpw},
+		USERNAME=#{username}, USERNICK=#{usernick},
+		USERAGE=#{userage},
+		USERPHONE=#{userphone}, USERADDR=#{useraddr},
+		USERADDRDETAIL=#{useraddrdetail},
+		USERADDRETC=#{useraddretc},
+		USERACCOUNT=#{useraccount}
+		WHERE
+		USERID=#{userid}
+	</update>
+	<!-- 사용자가 회원탈퇴시 -->
+	<update id="myprofiledelete" parameterType="String">
+		UPDATE TP_USER SET
+		USERPW='d', USERNAME='d', USERNICK='d', USERAGE=0,
+		USERPHONE=NULL,
+		USERADDR=NULL,
+		USERADDRDETAIL=NULL,
+		USERADDRETC=NULL,
+		USERACCOUNT=NULL,
+		MILEAGE=NULL,
+		DONATION=NULL,
+		BUY=NULL, USERGENDER=NULL, USERCLASS=NULL
+		WHERE USERID=#{userid}
+	</update>
+</mapper>
+
+
+
+
+
+
+
+

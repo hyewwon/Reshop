@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<web-app xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns="http://xmlns.jcp.org/xml/ns/javaee"
+	xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/javaee http://xmlns.jcp.org/xml/ns/javaee/web-app_4_0.xsd"
+	id="WebApp_ID" version="4.0">
+	<display-name>RESHOP</display-name>
+	<welcome-file-list>
+		<welcome-file>index.html</welcome-file>
+		<welcome-file>index.htm</welcome-file>
+		<welcome-file>index.jsp</welcome-file>
+		<welcome-file>default.html</welcome-file>
+		<welcome-file>default.htm</welcome-file>
+		<welcome-file>default.jsp</welcome-file>
+	</welcome-file-list>
+	<servlet>
+		<servlet-name>UserFrontController</servlet-name>
+		<servlet-class>com.reshop.app.user.UserFrontController</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>UserFrontController</servlet-name>
+		<url-pattern>*.us</url-pattern>
+	</servlet-mapping>
+	<servlet>
+		<servlet-name>ProductFrontController</servlet-name>
+		<servlet-class>com.reshop.app.admin.product.ProductFrontController</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>ProductFrontController</servlet-name>
+		<url-pattern>*.pd</url-pattern>
+	</servlet-mapping>
+	<servlet>
+		<servlet-name>AdminFrontController</servlet-name>
+		<servlet-class>com.reshop.app.admin.AdminFrontController</servlet-class>
+	</servlet>
+
+	<servlet>
+		<servlet-name>QuestFrontController</servlet-name>
+		<servlet-class>com.reshop.app.board.QuestFrontController</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>QuestFrontController</servlet-name>
+		<url-pattern>*.qu</url-pattern>
+	</servlet-mapping>
+
+	<servlet-mapping>
+		<servlet-name>AdminFrontController</servlet-name>
+		<url-pattern>*.ad</url-pattern>
+	</servlet-mapping>
+	<servlet>
+		<servlet-name>NoticeFrontController</servlet-name>
+		<servlet-class>com.reshop.app.board.NoticeFrontController</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>NoticeFrontController</servlet-name>
+		<url-pattern>*.bo</url-pattern>
+	</servlet-mapping>
+</web-app>

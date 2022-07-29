@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="DonaSell">
+	
+	<select id="getDonaSellCnt" resultType="_int">
+		SELECT COUNT(*) FROM DONA_OR_SELL
+	</select>
+	<select id="getDonaSellCnt2" parameterType="String" resultType="_int">
+		SELECT COUNT(*) FROM DONA_OR_SELL WHERE USERID=#{userid}
+	</select>
+	
+	<select id="getDonaSellList" parameterType="hashmap" resultType="donaselldto">
+		SELECT * FROM
+			(SELECT ROWNUM R, D.* FROM
+				(SELECT * FROM DONA_OR_SELL 
+				ORDER BY UPLOADTIME DESC) D) B WHERE B.R BETWEEN #{startRow} AND #{endRow}
+	</select> 
+	<select id="getDonaSellList2" parameterType="hashmap" resultType="donaselldto">
+		SELECT * FROM
+			(SELECT ROWNUM R, D.* FROM
+				(SELECT * FROM DONA_OR_SELL WHERE USERID=#{userid} ORDER BY ${sortColumn}) D) B
+		WHERE B.R BETWEEN #{startRow} AND #{endRow}
+	</select>
+	
+	<select id="getDetail" parameterType="_int" resultType="donaselldto">
+		SELECT * FROM DONA_OR_SELL WHERE DOSNUM=#{dosnum}
+	</select>
+	
+	<update id="updateConnoisseur" parameterType="hashmap">
+		UPDATE DONA_OR_SELL SET CONNOISSEUR=#{price}, DOSDIVISION='매입완료' WHERE DOSNUM=#{dosnum} 
+	</update>
+	<update id="donadone" parameterType="_int">
+		UPDATE DONA_OR_SELL SET DOSDIVISION='기부완료' WHERE DOSNUM=#{dosnum} 
+	</update>
+	<select id="getDonaSellRevenug" resultType="_int">
+		SELECT SUM(CONNOISSEUR) FROM DONA_OR_SELL WHERE USERID=#{userid}
+	</select>
+	
+</mapper>
+
+
+
+
+
+
+
+
+
+
+
+

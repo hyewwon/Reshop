@@ -1,0 +1,128 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="Order">
+
+	<select id="getOrderCnt" resultType="_int">
+		SELECT COUNT(*) FROM ORDER_TABLE
+	</select>
+	
+	<select id="getOrderList" parameterType="hashmap" resultType="orderdto">
+		SELECT * FROM
+			(SELECT ROWNUM R, D.* FROM
+				(SELECT * FROM ORDER_TABLE LEFT JOIN PRODSALE ON ORDER_TABLE.PRODNUM = PRODSALE.PRODNUM LEFT JOIN DELIVERY_TABLE 
+				ON ORDER_TABLE.MNG_NUM = DELIVERY_TABLE.MNG_NUM ORDER BY ORDERDATE DESC) D) B
+			WHERE B.R BETWEEN #{startRow} AND #{endRow}
+	</select> 
+
+
+	
+	<select id="getDetail" parameterType="_int" resultType="orderdto">
+		SELECT * FROM ORDER_TABLE LEFT JOIN PRODSALE ON ORDER_TABLE.PRODNUM = PRODSALE.PRODNUM 
+			LEFT JOIN DELIVERY_TABLE ON ORDER_TABLE.MNG_NUM = DELIVERY_TABLE.MNG_NUM 
+			WHERE ORDER_TABLE.MNG_NUM=#{mng_num}
+	</select>
+	
+	<update id="updateOrder" parameterType="orderdto">
+		UPDATE ORDER_TABLE SET DELI_NAME=#{deli_name}, DELI_PHONE=#{deli_phone}, DELI_ADDR=#{deli_addr},
+		DELI_ADDR_DETAIL=#{deli_addr_detail}, DELI_ADDR_ETC=#{deli_addr_etc}
+		WHERE MNG_NUM=#{mng_num} 
+	</update>
+	
+	
+	
+	<select id="getRefundCnt" resultType="_int">
+		SELECT COUNT(*) FROM ORDER_TABLE WHERE CANCEL_REFUND='환불요청' OR CANCEL_REFUND='환불완료'
+	</select>
+	
+	<select id="getRefundList" parameterType="hashmap" resultType="orderdto">
+		SELECT * FROM
+			(SELECT ROWNUM R, D.* FROM
+				(SELECT * FROM ORDER_TABLE LEFT JOIN PRODSALE ON ORDER_TABLE.PRODNUM = PRODSALE.PRODNUM LEFT JOIN DELIVERY_TABLE 
+				ON ORDER_TABLE.MNG_NUM = DELIVERY_TABLE.MNG_NUM WHERE CANCEL_REFUND='환불요청' OR CANCEL_REFUND='환불완료' ORDER BY ORDERDATE DESC) D) B
+			WHERE B.R BETWEEN #{startRow} AND #{endRow}
+	</select> 
+	
+	<update id="refundDone" parameterType="_int">
+		UPDATE ORDER_TABLE SET CANCEL_REFUND='환불완료' WHERE MNG_NUM=#{mng_num} 
+	</update>
+	
+	<select id="getTotalSales" resultType="_int">
+		SELECT SUM(PRICE) FROM ORDER_TABLE LEFT JOIN PRODSALE ON ORDER_TABLE.PRODNUM = PRODSALE.PRODNUM
+	</select>
+	
+	<select id="getdatelist" parameterType="hashmap" resultType="orderdto">
+		SELECT * FROM
+		(SELECT ROWNUM R, D.* FROM
+				(SELECT * FROM ORDER_TABLE LEFT JOIN PRODSALE ON ORDER_TABLE.PRODNUM = PRODSALE.PRODNUM LEFT JOIN DELIVERY_TABLE 
+				ON ORDER_TABLE.MNG_NUM = DELIVERY_TABLE.MNG_NUM ORDER BY ORDERDATE DESC) D) B
+		 WHERE TO_CHAR(UPLOADTIME,'YYYY-MM-DD') BETWEEN #{startdate} AND #{finishdate}
+	</select>
+	
+	<select id="getShoppingCnt" resultType="_int">
+		SELECT COUNT(*) FROM ORDER_TABLE WHERE USERID=#{userid}
+	</select>
+	<select id="getShoppingList" parameterType="hashmap" resultType="orderdto">
+		SELECT * FROM
+			(SELECT ROWNUM R, D.* FROM
+				(SELECT * FROM ORDER_TABLE LEFT JOIN PRODSALE ON ORDER_TABLE.PRODNUM = PRODSALE.PRODNUM WHERE USERID=#{userid} 
+				<if test="CANCEL_REFUND != null">AND CANCEL_REFUND = #{condition} </if>
+				  ORDER BY ${sortColumn}) D) B
+					WHERE B.R BETWEEN #{startRow} AND #{endRow}
+	</select>
+	<update id="updateRefund" parameterType="String">
+		UPDATE ORDER_TABLE SET CANCEL_REFUND='환불요청' WHERE MNG_NUM=#{refund} AND (SELECT COUNT(*) FROM DELIVERY_TABLE WHERE MNG_NUM=#{refund})=1
+	</update>
+	<update id="updateCancel" parameterType="String">
+		UPDATE ORDER_TABLE SET CANCEL_REFUND='취소' WHERE MNG_NUM=#{cancel} AND (SELECT COUNT(*) FROM DELIVERY_TABLE WHERE MNG_NUM=#{cancel})!=1
+	</update>
+	
+	<select id="getCartList" resultType="cartdto">
+		SELECT * FROM CART_TABLE
+	</select>
+	<select id="getCartList2" resultType="cartdto">
+		SELECT * FROM CART_TABLE WHERE USERID=#{userid}
+	</select>
+	
+	<update id="updateCartAdd" parameterType="hashmap">
+		UPDATE CART_TABLE SET PRODCNT = PRODCNT+1 WHERE USERID=#{userid} AND PRODNUM=#{prodnum}
+	</update>
+	
+	<insert id="insertCartAdd" parameterType="hashmap">
+		INSERT INTO CART_TABLE VALUES(CART_NUM.NEXTVAL, #{userid}, #{prodnum}, 1)
+	</insert>
+	
+	<delete id="deleteCart" parameterType="_int">
+		DELETE FROM CART_TABLE WHERE ORDERNUM=#{ordernum}
+	</delete>
+	
+	<select id="getOrderCheck" parameterType="hashmap" resultType="_int">
+	SELECT COUNT(*) FROM ORDER_TABLE WHERE  USERID=#{userid} AND PRODNUM=#{prodnum}
+	</select>
+	
+	<insert id="insertOrder" parameterType="hashmap">
+		INSERT INTO ORDER_TABLE VALUES(MNG_NUM.NEXTVAL, #{userid}, #{prodnum}, #{prodcnt}, SYSDATE, #{userphone}, #{useraddr},
+		#{useraddrdetail},#{useraddretc},#{username},NULL,1)
+	</insert>
+	
+	<update id="updateOrder2">
+		UPDATE ORDER_TABLE SET ORDERCNT = ORDERCNT+1 WHERE USERID=#{userid} AND PRODNUM=#{prodnum}
+	</update>
+	
+	<delete id="deleteCartAll">
+		DELETE FROM CART_TABLE WHERE USERID=#{userid}
+	</delete>
+</mapper>
+
+
+
+
+
+
+
+
+
+
+
+

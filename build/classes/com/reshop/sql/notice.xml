@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="Notice">
+	<select id="getNoticeCnt" resultType="_int">
+		SELECT COUNT(*) FROM NOTICE_BOARD
+	</select>
+	<select id="getReplyCnt" resultType="_int" parameterType="_int">
+		SELECT COUNT(*) FROM TP_REPLY WHERE NOTICE_NUM=#{notice_num}
+	</select>
+	<select id="getNoticeList" parameterType="hashmap" resultType="noticedto">
+		SELECT * FROM
+			(SELECT ROWNUM R, D.* FROM
+				(SELECT * FROM NOTICE_BOARD ORDER BY NOTICE_NUM DESC) D) B
+		WHERE B.R BETWEEN #{startRow} AND #{endRow}
+	</select> 
+	<select id="getReplys" parameterType="_int" resultType="replydto">
+		SELECT * FROM TP_REPLY WHERE NOTICE_NUM=#{notice_num}	
+	</select>
+	<select id="getSeq" resultType="_int" parameterType="string">
+		SELECT NOTICE_NUM FROM NOTICE_BOARD WHERE USERID=#{userid} ORDER BY NOTICE_NUM DESC
+	</select>
+	<select id="getDetail" parameterType="_int" resultType="noticedto">
+		SELECT * FROM NOTICE_BOARD WHERE NOTICE_NUM=#{notice_num}
+	</select>
+	<insert id="insertNotice" parameterType="noticedto">
+		INSERT INTO NOTICE_BOARD
+		VALUES(BOARD_SEQ.NEXTVAL, #{notice_title}, #{notice_contents}, #{userid}, #{notice_cnt}, SYSDATE)
+	</insert>
+	<insert id="insertReply" parameterType="replydto">
+<!-- 		INSERT INTO TP_REPLY
+		VALUES(REPLY_SEQ.NEXTVAL, #{re_contents}, #{userid}, #{notice_num})  -->
+		INSERT INTO TP_REPLY (REPLYNUM,USERID,RE_CONTENTS,NOTICE_NUM) VALUES (REPLY_SEQ.NEXTVAL,#{userid},#{re_contents}, #{notice_num})
+	</insert>
+	<update id="updateNotice_cnt" parameterType="_int">
+		UPDATE NOTICE_BOARD SET NOTICE_CNT = NOTICE_CNT+1 WHERE NOTICE_NUM=#{notice_num}
+	</update>
+	<update id="updateNotice" parameterType="noticedto">
+		UPDATE NOTICE_BOARD SET NOTICE_TITLE=#{notice_title}, NOTICE_CONTENTS=#{notice_contents}
+		WHERE NOTICE_NUM=#{notice_num} 
+	</update>
+	<update id="modifyReply" parameterType="hashmap">
+		UPDATE TP_REPLY SET RE_CONTENTS=#{re_contents} WHERE REPLYNUM=#{replynum}
+	</update>
+	<delete id="deleteReply" parameterType="_int">
+		DELETE FROM TP_REPLY WHERE REPLYNUM=#{replynum}
+	</delete>
+	<delete id="deleteReplyAll" parameterType="_int">
+		DELETE FROM TP_REPLY WHERE NOTICE_NUM=#{notice_num}
+	</delete>
+	<delete id="deleteNotice" parameterType="_int">
+		DELETE FROM NOTICE_BOARD WHERE NOTICE_NUM=#{notice_num}
+	</delete>
+</mapper>
+
+
+
+
+
+
+
+
+
+
+
+

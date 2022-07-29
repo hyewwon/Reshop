@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="Boardfile">
+	<insert id="insertFile" parameterType="boardfiledto">
+<!-- 	INSERT INTO TP_FILE VALUES(#{systemname},#{orgname},#{notice_num})  -->
+		INSERT INTO TP_FILE (SYSTEMNAME, ORGNAME, NOTICE_NUM) VALUES (#{systemname},#{orgname},#{notice_num})
+	</insert>
+	<insert id="insertFile2" parameterType="boardfiledto">
+<!-- 	INSERT INTO TP_FILE VALUES(#{systemname},#{orgname},#{quest_num})  -->
+		INSERT INTO TP_FILE (SYSTEMNAME, ORGNAME, QUEST_NUM) VALUES (#{systemname},#{orgname},#{quest_num})
+	</insert>
+	<insert id="insertFile3" parameterType="boardfiledto">
+<!-- 	INSERT INTO TP_FILE VALUES(#{systemname},#{orgname},#{news_num})  -->
+		INSERT INTO TP_FILE (SYSTEMNAME, ORGNAME, NEWS_NUM) VALUES (#{systemname},#{orgname},#{news_num})
+	</insert>
+	<select id="getFiles" parameterType="_int" resultType="boardfiledto">
+		SELECT * FROM TP_FILE WHERE NOTICE_NUM=#{notice_num}
+	</select>
+	<select id="getFiles2" parameterType="_int" resultType="boardfiledto">
+		SELECT * FROM TP_FILE WHERE QUEST_NUM=#{quest_num}
+	</select>
+	<select id="getFiles3" parameterType="_int" resultType="boardfiledto">
+		SELECT * FROM TP_FILE WHERE NEWS_NUM=#{news_num}
+	</select>
+	<delete id="deleteFileByName" parameterType="string">
+		DELETE FROM TP_FILE WHERE SYSTEMNAME=#{systemname}	
+	</delete>
+</mapper>
+
+
+
+
+
+
+
+
+
+
+
+
